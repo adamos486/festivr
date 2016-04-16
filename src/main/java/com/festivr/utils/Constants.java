@@ -1,6 +1,7 @@
 package com.festivr.utils;
 
 import android.os.Build;
+import android.text.TextUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -150,5 +151,30 @@ public class Constants {
       Collections.shuffle(hugeList, new Random(seed));
     }
     return hugeList;
+  }
+
+  public static <T> T checkForNonNullArg(T generic) {
+    return checkForNonNull(generic, "Input argument cannot be null!");
+  }
+
+  public static <T> T checkForNonNull(T generic, String exceptionMsg) {
+    if (generic == null) {
+      throw new NullPointerException(exceptionMsg);
+    }
+    return generic;
+  }
+
+  public static String checkForNonEmptyText(String text) {
+    if (TextUtils.isEmpty(text)) {
+      throw new IllegalArgumentException("Text should not be empty or null.");
+    }
+    return text;
+  }
+
+  public static String checkForNonEmptyText(String text, String exceptionMsg) {
+    if (TextUtils.isEmpty(text)) {
+      throw new IllegalArgumentException(exceptionMsg);
+    }
+    return text;
   }
 }
