@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="porter_robinson">Porter Robinson</string>
+  <string name="beyonce">Beyonce</string>
+  <string name="the_beatles">The Beatles</string>
+  <string name="the_black_keys">The Black Keys</string>
+  <string name="coachella">EDM at Coachella</string>
+  <string name="everything">Everything</string>
+  <string name="artists_title">Experience Options</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string-array name="artist_names">
+    <item>@string/porter_robinson</item>
+    <item>@string/beyonce</item>
+    <item>@string/the_beatles</item>
+    <item>@string/the_black_keys</item>
+    <item>@string/coachella</item>
+    <item>@string/everything</item>
+  </string-array>
+</resources>
