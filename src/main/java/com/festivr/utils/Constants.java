@@ -78,7 +78,7 @@ public class Constants {
           "http://i.imgur.com/5yYl1HT.jpg", "http://i.imgur.com/dzCSMNt.png",
           "http://i.imgur.com/emQy1so.jpg");
 
-  private List<String> hugeList;
+  private static List<String> hugeList;
 
   private static boolean hasPorterRobinsonBeenShuffled;
   private static boolean hasBeyonceBeenShuffled;
@@ -86,7 +86,7 @@ public class Constants {
   private static boolean hasTheBlackKeysBeenShuffled;
   private static boolean hasCoachellaDanceBeenShuffled;
 
-  public List<String> getPorterRobinson() {
+  public static List<String> getPorterRobinson() {
     if (!hasPorterRobinsonBeenShuffled) {
       long seed = System.nanoTime();
       Collections.shuffle(porterRobinson, new Random(seed));
@@ -96,7 +96,7 @@ public class Constants {
     return porterRobinson;
   }
 
-  public List<String> getBeyonce() {
+  public static List<String> getBeyonce() {
     if (!hasBeyonceBeenShuffled) {
       long seed = System.nanoTime();
       Collections.shuffle(beyonce, new Random(seed));
@@ -106,7 +106,7 @@ public class Constants {
     return beyonce;
   }
 
-  public List<String> getTheBeatles() {
+  public static List<String> getTheBeatles() {
     if (!hasTheBeatlesBeenShuffled) {
       long seed = System.nanoTime();
       Collections.shuffle(theBeatles, new Random(seed));
@@ -116,7 +116,7 @@ public class Constants {
     return theBeatles;
   }
 
-  public List<String> getTheBlackKeys() {
+  public static List<String> getTheBlackKeys() {
     if (!hasTheBlackKeysBeenShuffled) {
       long seed = System.nanoTime();
       Collections.shuffle(theBlackKeys, new Random(seed));
@@ -136,7 +136,7 @@ public class Constants {
     return coachellaDance;
   }
 
-  public List<String> getHugeList() {
+  public static List<String> getHugeList() {
     if (hugeList == null) {
       hugeList = new ArrayList<>();
       hugeList.addAll(porterRobinson);

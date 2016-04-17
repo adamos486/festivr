@@ -27,17 +27,17 @@ public class Configuration {
 
   final ImageDownloader downloader;
 
-  public Configuration(ConfigBuilder configBuilder) {
-    this.context = configBuilder.context;
-    this.resources = configBuilder.context.getResources();
-    this.maxWidth = configBuilder.maxImageWidth;
-    this.maxHeight = configBuilder.maxImageHeight;
-    this.networkExecutor = configBuilder.networkExecutor;
-    this.cachedExecutor = configBuilder.cachedExecutor;
-    this.memoryCache = configBuilder.memoryCache;
-    this.threadPoolSize = configBuilder.threadPoolSize;
-    this.threadPriority = configBuilder.threadPriority;
-    this.downloader = configBuilder.downloader;
+  public Configuration(Builder builder) {
+    this.context = builder.context;
+    this.resources = builder.context.getResources();
+    this.maxWidth = builder.maxImageWidth;
+    this.maxHeight = builder.maxImageHeight;
+    this.networkExecutor = builder.networkExecutor;
+    this.cachedExecutor = builder.cachedExecutor;
+    this.memoryCache = builder.memoryCache;
+    this.threadPoolSize = builder.threadPoolSize;
+    this.threadPriority = builder.threadPriority;
+    this.downloader = builder.downloader;
   }
 
   public BaseCache getMemoryCache() {
@@ -52,8 +52,8 @@ public class Configuration {
     return this.context;
   }
 
-  public static class ConfigBuilder {
-    public static final int THREAD_POOL_SIZE = 3;
+  public static class Builder {
+    public static final int THREAD_POOL_SIZE = 15;
     public static final int DEFAULT_THREAD_PRIORITY = Thread.NORM_PRIORITY;
     private Context context;
 
@@ -68,21 +68,21 @@ public class Configuration {
     private BaseCache memoryCache = null;
     private ImageDownloader downloader = null;
 
-    public ConfigBuilder(Context context) {
+    public Builder(Context context) {
       this.context = context.getApplicationContext();
     }
 
-    public ConfigBuilder setCachedExecutor(Executor executor) {
+    public Builder setCachedExecutor(Executor executor) {
       this.cachedExecutor = executor;
       return this;
     }
 
-    public ConfigBuilder setThreadPoolSize(int size) {
+    public Builder setThreadPoolSize(int size) {
       this.threadPoolSize = size;
       return this;
     }
 
-    public ConfigBuilder setThreadPriority(int priority) {
+    public Builder setThreadPriority(int priority) {
       if (priority < Thread.MIN_PRIORITY) {
         this.threadPriority = Thread.MIN_PRIORITY;
       } else {
@@ -95,7 +95,7 @@ public class Configuration {
       return this;
     }
 
-    public ConfigBuilder setMemoryCacheSize(int size) {
+    public Builder setMemoryCacheSize(int size) {
       if (memoryCache == null) {
         memoryCache = new LruCache(size);
       } else {
@@ -104,12 +104,12 @@ public class Configuration {
       return this;
     }
 
-    public ConfigBuilder setMemoryCache(BaseCache cache) {
+    public Builder setMemoryCache(BaseCache cache) {
       this.memoryCache = cache;
       return this;
     }
 
-    public ConfigBuilder setImageDownloader(ImageDownloader downloader) {
+    public Builder setImageDownloader(ImageDownloader downloader) {
       this.downloader = downloader;
       return this;
     }

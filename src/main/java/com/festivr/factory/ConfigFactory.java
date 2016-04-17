@@ -10,6 +10,7 @@ import com.festivr.cache.LruCache;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -19,9 +20,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ConfigFactory {
 
   public static Executor initDefaultExecutor(int poolSize, int priority) {
-    BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>();
-    return new ThreadPoolExecutor(poolSize, poolSize, 0L, TimeUnit.MILLISECONDS, queue,
-        initCustomThreadFactory(priority, "festivr-images-"));
+    BlockingQueue<Runnable> queue = new LinkedBlockingDeque<>(poolSize);
+    return new ThreadPoolExecutor(3, poolSize, 0L, TimeUnit.MILLISECONDS, queue);
   }
 
   public static CustomThreadFactory initCustomThreadFactory(int priority, String prefix) {
@@ -44,8 +44,7 @@ public class ConfigFactory {
   }
 
   public static Executor initDefaultTaskDistributor() {
-    return Executors.newCachedThreadPool(
-        initCustomThreadFactory(Thread.NORM_PRIORITY, "festivr-images-dist-"));
+    return Executors.newCachedThreadPool();
   }
 
   private static boolean greaterThanApiHoneycomb() {

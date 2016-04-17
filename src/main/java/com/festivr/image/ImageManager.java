@@ -5,6 +5,7 @@ import com.festivr.factory.ConfigFactory;
 import com.festivr.task.HandleImageTask;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
+import timber.log.Timber;
 
 public class ImageManager {
   final Configuration config;
@@ -25,13 +26,18 @@ public class ImageManager {
   }
 
   void addTask(final HandleImageTask task) {
+    Timber.d("Is taskDistributor shutdown? " +((ExecutorService) taskDistributor).isShutdown());
+    Timber.d("Is taskDistributor terminated? " +((ExecutorService) taskDistributor).isTerminated());
+
     taskDistributor.execute(new Runnable() {
       @Override public void run() {
         Bitmap bitmap = config.getMemoryCache().get(task.getKey());
         checkForExecutorShutdown();
-        if (bitmap != null && bitmap.isRecycled()) {
+        if (bitmap == null || bitmap.isRecycled()) {
+          Timber.d("Adding a network Task!!!");
           networkExecutor.execute(task);
         } else {
+          Timber.d("Adding a cached Task!!!");
           cachedExecutor.execute(task);
         }
       }

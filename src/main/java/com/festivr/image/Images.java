@@ -77,6 +77,6 @@ public class Images {
       throw new IllegalArgumentException("Can't load without a url!!!");
     }
 
-    manager.addTask(new HandleImageTask(key, manager, loadingListener, new ImageViewWrapper(view)));
+    manager.addTask(new HandleImageTask(key, manager, listener, new ImageViewWrapper(view)));
   }
 }
