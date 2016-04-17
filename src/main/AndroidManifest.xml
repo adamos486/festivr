@@ -3,6 +3,7 @@
           android:versionCode="2"
           android:versionName="1.0.0-SNAPSHOT"
           package="com.festivr">
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application android:name="com.festivr.FestivrApplication">
         <activity android:name="com.festivr.activity.MainActivity" android:screenOrientation="portrait">
