@@ -9,6 +9,7 @@ import com.festivr.factory.ConfigFactory;
 import java.util.concurrent.Executor;
 
 public class Configuration {
+  final Context context;
   final Resources resources;
   final int maxWidth;
   final int maxHeight;
@@ -27,6 +28,7 @@ public class Configuration {
   final ImageDownloader downloader;
 
   public Configuration(ConfigBuilder configBuilder) {
+    this.context = configBuilder.context;
     this.resources = configBuilder.context.getResources();
     this.maxWidth = configBuilder.maxImageWidth;
     this.maxHeight = configBuilder.maxImageHeight;
@@ -36,6 +38,18 @@ public class Configuration {
     this.threadPoolSize = configBuilder.threadPoolSize;
     this.threadPriority = configBuilder.threadPriority;
     this.downloader = configBuilder.downloader;
+  }
+
+  public BaseCache getMemoryCache() {
+    return this.memoryCache;
+  }
+
+  public ImageDownloader getDownloader() {
+    return this.downloader;
+  }
+
+  public Context getContext() {
+    return this.context;
   }
 
   public static class ConfigBuilder {
@@ -125,7 +139,7 @@ public class Configuration {
       }
 
       if (downloader == null) {
-        downloader = new ImageDownloader();
+        downloader = new ImageDownloader(context);
       }
     }
   }

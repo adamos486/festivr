@@ -11,12 +11,11 @@ import timber.log.Timber;
 public class UrlKeyCombo {
   //Allowed characters for Uri encoding.
   private static final String ALLOWED_CHARS = "@#&=*+-_.,:!?()/~'%";
-  private URL url = null;
   private final String urlAsString;
-
   //Define UTF-8 Charset
   String UTF8_CHARSET_NAME = "UTF-8";
   Charset CHARSET = Charset.forName(UTF8_CHARSET_NAME);
+  private URL url = null;
   private URL safelyEncodedUrl;
   private String safelyEncodedString;
   private byte[] byteArrayKey;
@@ -41,9 +40,13 @@ public class UrlKeyCombo {
     return getSafelyEncodedUrl();
   }
 
-  public URL getSafelyEncodedUrl() throws MalformedURLException {
+  public URL getSafelyEncodedUrl() {
     if (safelyEncodedUrl == null) {
-      safelyEncodedUrl = new URL(getSafelyEncodedUrlString());
+      try {
+        safelyEncodedUrl = new URL(getSafelyEncodedUrlString());
+      } catch (MalformedURLException e) {
+        Timber.e("Encountered a URL that can't be encoded.", e);
+      }
     }
     return safelyEncodedUrl;
   }
