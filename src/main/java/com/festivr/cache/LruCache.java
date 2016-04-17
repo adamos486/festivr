@@ -5,8 +5,8 @@ import com.festivr.url.UrlKeyCombo;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class LruCache {
-  private float memoryMode = -1;
+public class LruCache implements BaseCache {
+  private float memoryMode = MEDIUM_MEMORY;
   public static final float LOW_MEMORY = 0.5f;
   public static final float MEDIUM_MEMORY = 1f;
   public static final float HIGH_MEMORY = 1.5f;
@@ -18,7 +18,7 @@ public class LruCache {
 
   public LruCache(int size) {
     this.initialMaxSize = size;
-    this.maxSize = size;
+    this.maxSize = Math.round(initialMaxSize * memoryMode);
   }
 
   public LruCache(int size, float memoryMode) {
@@ -40,25 +40,11 @@ public class LruCache {
     trimToSize(maxSize);
   }
 
-  public void clearCache() {
+  @Override public void clearCache() {
     trimToSize(-1);
   }
 
-  private void trimToSize(int size) {
-    Map.Entry last;
-    while (currentSize > size) {
-      last = cache.entrySet().iterator().next();
-      final Bitmap evicted = (Bitmap) last.getValue();
-
-      currentSize = currentSize - getSize(evicted);
-
-      final UrlKeyCombo key = (UrlKeyCombo) last.getKey();
-      cache.remove(key);
-      onEviction(key, evicted);
-    }
-  }
-
-  public synchronized Bitmap remove(UrlKeyCombo key) {
+  @Override public synchronized Bitmap remove(UrlKeyCombo key) {
     final Bitmap value = cache.remove(key);
     if (value != null) {
       currentSize = currentSize - getSize(value);
@@ -66,8 +52,7 @@ public class LruCache {
     return value;
   }
 
-
-  public synchronized Bitmap put(UrlKeyCombo key, Bitmap bitmap) {
+  @Override public synchronized Bitmap put(UrlKeyCombo key, Bitmap bitmap) {
     final int inputSize = getSize(bitmap);
     if (inputSize >= maxSize) {
       //We can evict this right away because we know it won't fit.
@@ -87,8 +72,27 @@ public class LruCache {
     return result;
   }
 
-  public synchronized Bitmap get(UrlKeyCombo key) {
+  @Override public synchronized Bitmap get(UrlKeyCombo key) {
     return cache.get(key);
+  }
+
+  @Override public synchronized void setMaxSize(int size) {
+    maxSize = Math.round(size * memoryMode);
+  }
+
+
+  private void trimToSize(int size) {
+    Map.Entry last;
+    while (currentSize > size) {
+      last = cache.entrySet().iterator().next();
+      final Bitmap evicted = (Bitmap) last.getValue();
+
+      currentSize = currentSize - getSize(evicted);
+
+      final UrlKeyCombo key = (UrlKeyCombo) last.getKey();
+      cache.remove(key);
+      onEviction(key, evicted);
+    }
   }
 
   public void onEviction(UrlKeyCombo key, Bitmap bitmap) {
