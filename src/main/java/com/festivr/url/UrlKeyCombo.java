@@ -6,11 +6,12 @@ import com.festivr.utils.Constants;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import timber.log.Timber;
 
 public class UrlKeyCombo {
   //Allowed characters for Uri encoding.
   private static final String ALLOWED_CHARS = "@#&=*+-_.,:!?()/~'%";
-  private final URL url;
+  private URL url = null;
   private final String urlAsString;
 
   //Define UTF-8 Charset
@@ -23,11 +24,15 @@ public class UrlKeyCombo {
   public UrlKeyCombo(URL url) {
     this.url = Constants.checkForNonNull(url,
         "URL object should never be null in UrlKeyCombo construction!");
-    this.urlAsString = null;
+    this.urlAsString = url.toString();
   }
 
   public UrlKeyCombo(String url) {
-    this.url = null;
+    try {
+      this.url = new URL(url);
+    } catch (MalformedURLException e) {
+      Timber.e("MalformedURLException when trying to construct a UrlKeyCombo. \n url:" + url, e);
+    }
     this.urlAsString = Constants.checkForNonEmptyText(url,
         "Url String should never be empty or null in UrlKeyCombo construction!");
   }

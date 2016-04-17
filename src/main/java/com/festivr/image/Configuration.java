@@ -1,6 +1,7 @@
 package com.festivr.image;
 
 import android.content.Context;
+import android.content.res.Resources;
 import com.festivr.cache.BaseCache;
 import com.festivr.cache.LruCache;
 import com.festivr.downloader.ImageDownloader;
@@ -8,9 +9,33 @@ import com.festivr.factory.ConfigFactory;
 import java.util.concurrent.Executor;
 
 public class Configuration {
+  final Resources resources;
+  final int maxWidth;
+  final int maxHeight;
+
+  final Executor networkExecutor;
+  final Executor cachedExecutor;
+
+  private static boolean altNetworkExecutor;
+  private static boolean altCachedExecutor;
+  private static boolean altMemoryCache;
+
+  final BaseCache memoryCache;
+  final int threadPoolSize;
+  final int threadPriority;
+
+  final ImageDownloader downloader;
 
   public Configuration(ConfigBuilder configBuilder) {
-
+    this.resources = configBuilder.context.getResources();
+    this.maxWidth = configBuilder.maxImageWidth;
+    this.maxHeight = configBuilder.maxImageHeight;
+    this.networkExecutor = configBuilder.networkExecutor;
+    this.cachedExecutor = configBuilder.cachedExecutor;
+    this.memoryCache = configBuilder.memoryCache;
+    this.threadPoolSize = configBuilder.threadPoolSize;
+    this.threadPriority = configBuilder.threadPriority;
+    this.downloader = configBuilder.downloader;
   }
 
   public static class ConfigBuilder {
@@ -18,8 +43,8 @@ public class Configuration {
     public static final int DEFAULT_THREAD_PRIORITY = Thread.NORM_PRIORITY;
     private Context context;
 
-    private int maxImageWidth = 0;
-    private int maxImageHeight = 0;
+    private int maxImageWidth = -1;
+    private int maxImageHeight = -1;
 
     private Executor networkExecutor = null;
     private Executor cachedExecutor = null;
@@ -28,9 +53,6 @@ public class Configuration {
 
     private BaseCache memoryCache = null;
     private ImageDownloader downloader = null;
-    private boolean altNetworkExecutor;
-    private boolean altCachedExecutor;
-    private boolean altMemoryCache;
 
     public ConfigBuilder(Context context) {
       this.context = context.getApplicationContext();
@@ -68,7 +90,7 @@ public class Configuration {
       return this;
     }
 
-    public ConfigBuilder setMemoryCache(LruCache cache) {
+    public ConfigBuilder setMemoryCache(BaseCache cache) {
       this.memoryCache = cache;
       return this;
     }
@@ -97,7 +119,7 @@ public class Configuration {
       }
 
       if (memoryCache == null) {
-        memoryCache = ConfigFactory.createDefaultLruCache(context, -1);
+        memoryCache = ConfigFactory.initDefaultLruCache(context, -1);
       } else {
         altMemoryCache = true;
       }
