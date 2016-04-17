@@ -7,7 +7,7 @@ import java.util.Map;
 import timber.log.Timber;
 
 public class LruCache implements BaseCache {
-  private float memoryMode = LOW_MEMORY;
+  private float memoryMode = MEDIUM_MEMORY;
   public static final float LOW_MEMORY = 0.5f;
   public static final float MEDIUM_MEMORY = 1f;
   public static final float HIGH_MEMORY = 1.5f;

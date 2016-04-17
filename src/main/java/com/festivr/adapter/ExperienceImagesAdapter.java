@@ -46,7 +46,7 @@ public class ExperienceImagesAdapter extends BaseAdapter {
     holder = new ViewHolder();
     holder.imageView = (ImageView) convertView.findViewById(R.id.image);
     holder.imageView.setBackgroundColor(
-        parent.getContext().getResources().getColor(android.R.color.darker_gray));
+        parent.getContext().getResources().getColor(android.R.color.black));
 
     convertView.setTag(holder);
     //} else {

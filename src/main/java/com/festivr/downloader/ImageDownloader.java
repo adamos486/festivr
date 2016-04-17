@@ -30,7 +30,8 @@ public class ImageDownloader {
     this.memoryCache = memoryCache;
   }
 
-  public void downloadImage(final UrlKeyCombo key, final ImageLoadingListener listener, final ImageViewWrapper view) {
+  public void downloadImage(final UrlKeyCombo key, final ImageLoadingListener listener,
+      final ImageViewWrapper view) {
     final Request request = new Request.Builder().get().url(key.getSafelyEncodedUrl()).build();
     client.newCall(request).enqueue(new Callback() {
       @Override public void onFailure(Call call, IOException e) {
@@ -40,8 +41,19 @@ public class ImageDownloader {
       @Override public void onResponse(Call call, Response response) throws IOException {
         if (response.isSuccessful()) {
           Timber.d("YAY!");
+
           InputStream stream = response.body().byteStream();
-          Bitmap bitmap = BitmapFactory.decodeStream(stream);
+          BitmapFactory.Options options = new BitmapFactory.Options();
+          if (response.body().contentLength() >= 150000
+              && response.body().contentLength() <= 999999) {
+            options.inSampleSize = 2;
+          } else if (response.body().contentLength() >= 1000000) {
+            options.inSampleSize = 4;
+          } else {
+            options.inSampleSize = 1;
+          }
+
+          Bitmap bitmap = BitmapFactory.decodeStream(stream, null, options);
           if (bitmap != null) {
             Timber.d("Calling back with bitmap.");
             listener.loadingComplete(key, view, bitmap);
