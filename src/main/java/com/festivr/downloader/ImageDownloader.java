@@ -3,6 +3,7 @@ package com.festivr.downloader;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import com.festivr.cache.BaseCache;
 import com.festivr.listener.ImageLoadingListener;
 import com.festivr.url.UrlKeyCombo;
 import com.festivr.view.ImageViewWrapper;
@@ -19,12 +20,14 @@ import timber.log.Timber;
 public class ImageDownloader {
   private Context context;
   private OkHttpClient client;
+  private BaseCache memoryCache;
 
-  public ImageDownloader(Context context) {
+  public ImageDownloader(Context context, BaseCache memoryCache) {
     this.context = context;
     this.client = new OkHttpClient.Builder().connectTimeout(5000, TimeUnit.MILLISECONDS)
         .readTimeout(20000, TimeUnit.MILLISECONDS)
         .build();
+    this.memoryCache = memoryCache;
   }
 
   public void downloadImage(final UrlKeyCombo key, final ImageLoadingListener listener, final ImageViewWrapper view) {
@@ -42,6 +45,7 @@ public class ImageDownloader {
           if (bitmap != null) {
             Timber.d("Calling back with bitmap.");
             listener.loadingComplete(key, view, bitmap);
+            memoryCache.put(key, bitmap);
           } else {
             Timber.e("Uh oh! Couldn't load the bitmap.");
           }

@@ -51,7 +51,7 @@ public class UrlKeyCombo {
     return safelyEncodedUrl;
   }
 
-  private String getSafelyEncodedUrlString() {
+  public String getSafelyEncodedUrlString() {
     if (TextUtils.isEmpty(safelyEncodedString)) {
       String nonEncoded = urlAsString;
       if (TextUtils.isEmpty(nonEncoded)) {

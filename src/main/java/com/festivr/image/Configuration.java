@@ -53,7 +53,7 @@ public class Configuration {
   }
 
   public static class Builder {
-    public static final int THREAD_POOL_SIZE = 15;
+    public static final int THREAD_POOL_SIZE = 5;
     public static final int DEFAULT_THREAD_PRIORITY = Thread.NORM_PRIORITY;
     private Context context;
 
@@ -139,7 +139,7 @@ public class Configuration {
       }
 
       if (downloader == null) {
-        downloader = new ImageDownloader(context);
+        downloader = new ImageDownloader(context, memoryCache);
       }
     }
   }

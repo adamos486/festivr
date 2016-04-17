@@ -4,9 +4,10 @@ import android.graphics.Bitmap;
 import com.festivr.url.UrlKeyCombo;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import timber.log.Timber;
 
 public class LruCache implements BaseCache {
-  private float memoryMode = MEDIUM_MEMORY;
+  private float memoryMode = LOW_MEMORY;
   public static final float LOW_MEMORY = 0.5f;
   public static final float MEDIUM_MEMORY = 1f;
   public static final float HIGH_MEMORY = 1.5f;
@@ -83,6 +84,8 @@ public class LruCache implements BaseCache {
 
   private void trimToSize(int size) {
     Map.Entry last;
+    Timber.d("current size is " + currentSize);
+    Timber.d("size is " + size);
     while (currentSize > size) {
       last = cache.entrySet().iterator().next();
       final Bitmap evicted = (Bitmap) last.getValue();
@@ -96,7 +99,7 @@ public class LruCache implements BaseCache {
   }
 
   public void onEviction(UrlKeyCombo key, Bitmap bitmap) {
-
+    Timber.d("Evicting: " + key.getSafelyEncodedUrlString());
   }
 
   public synchronized int getMaxSize() {

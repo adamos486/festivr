@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import com.festivr.R;
 import com.festivr.image.Configuration;
 import com.festivr.image.Images;
@@ -19,19 +21,30 @@ public class MainActivity extends Activity {
 
   private ImageView imageView;
   private Handler handler = new Handler();
+  private long timeToDelay;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.deckard);
 
     imageView = (ImageView) findViewById(R.id.test_image);
+    imageView.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        runThroughImages();
+      }
+    });
 
     Images.getSingleton().setup(new Configuration.Builder(this).build());
+  }
+
+  private void runThroughImages() {
     List<String> list = Constants.getHugeList();
-    for (final String s : list) {
+    for (int i = 0; i < list.size(); i++) {
+      final int index = i;
+      final String s = list.get(i);
       handler.postDelayed(new Runnable() {
         @Override public void run() {
-          Timber.d("Trying to load " + s);
+          Timber.d("Index: " + index + "Trying to load " + s);
           Images.getSingleton().load(new UrlKeyCombo(s), imageView, new ImageLoadingListener() {
             @Override public void loadingStarted(UrlKeyCombo combo, ImageViewWrapper view) {
 
@@ -46,6 +59,7 @@ public class MainActivity extends Activity {
                 final Bitmap bitmap) {
               runOnUiThread(new Runnable() {
                 @Override public void run() {
+                  Timber.d("setting " + index + " in view");
                   view.setImageBitmap(bitmap);
                 }
               });
@@ -56,7 +70,7 @@ public class MainActivity extends Activity {
             }
           });
         }
-      }, 1000);
+      }, (50 * i));
     }
   }
 }
