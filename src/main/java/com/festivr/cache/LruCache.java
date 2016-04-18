@@ -7,107 +7,142 @@ import java.util.Map;
 import timber.log.Timber;
 
 public class LruCache implements BaseCache {
-  private float memoryMode = MEDIUM_MEMORY;
   public static final float LOW_MEMORY = 0.5f;
   public static final float MEDIUM_MEMORY = 1f;
   public static final float HIGH_MEMORY = 1.5f;
+  private final LinkedHashMap<String, Bitmap> cache = new LinkedHashMap<>(0, 0.75f, true);
+  private int initialMemMaxSize;
+  private float memoryMode = MEDIUM_MEMORY;
+  private int maxMemSize;
+  private int currentMemSize = 0;
+  private int maxPoolSize;
+  private int currentPoolSize;
 
-  private final LinkedHashMap<UrlKeyCombo, Bitmap> cache = new LinkedHashMap<>(0, 0.75f, true);
-  private final int initialMaxSize;
-  private int maxSize;
-  private int currentSize = 0;
-
-  public LruCache(int size) {
-    this.initialMaxSize = size;
-    this.maxSize = Math.round(initialMaxSize * memoryMode);
+  public LruCache(int size, boolean isPool) {
+    if (isPool) {
+      this.maxPoolSize = size;
+    } else {
+      this.initialMemMaxSize = size;
+      this.maxMemSize = Math.round(initialMemMaxSize * memoryMode);
+    }
   }
 
-  public LruCache(int size, float memoryMode) {
+  public LruCache(int memSize, int poolSize) {
+    this.initialMemMaxSize = memSize;
+    this.maxMemSize = Math.round(initialMemMaxSize * memoryMode);
+    this.maxPoolSize = poolSize;
+  }
+
+  public LruCache(int memSize, float memoryMode) {
     this.memoryMode = memoryMode;
-    this.initialMaxSize = size;
-    this.maxSize = Math.round(size * memoryMode);
+    this.initialMemMaxSize = memSize;
+    this.maxMemSize = Math.round(memSize * memoryMode);
   }
 
-  public synchronized void setMemoryMode(float mode) {
+  public LruCache(int memSize, int poolSize, float memoryMode) {
+    this.memoryMode = memoryMode;
+    this.initialMemMaxSize = memSize;
+    this.maxMemSize = Math.round(initialMemMaxSize * memoryMode);
+    this.maxPoolSize = poolSize;
+  }
+
+  @Override public synchronized void setMemoryMode(float mode) {
     if (mode < 0) {
       throw new IllegalArgumentException("Memory Mode must be > 0");
     }
     this.memoryMode = mode;
-    maxSize = Math.round(initialMaxSize * memoryMode);
+    maxMemSize = Math.round(initialMemMaxSize * memoryMode);
     evict();
   }
 
   private void evict() {
-    trimToSize(maxSize);
+    trimToSize(maxMemSize, maxPoolSize);
   }
 
   @Override public void clearCache() {
-    trimToSize(-1);
+    trimToSize(0, 0);
   }
 
-  @Override public synchronized Bitmap remove(UrlKeyCombo key) {
+  @Override public synchronized Bitmap remove(String key) {
     final Bitmap value = cache.remove(key);
     if (value != null) {
-      currentSize = currentSize - getSize(value);
+      currentMemSize = currentMemSize - getSize(value);
+      --currentPoolSize;
     }
     return value;
   }
 
-  @Override public synchronized Bitmap put(UrlKeyCombo key, Bitmap bitmap) {
+  @Override public synchronized Bitmap put(String key, Bitmap bitmap) {
     final int inputSize = getSize(bitmap);
-    if (inputSize >= maxSize) {
+    if (inputSize >= maxMemSize) {
       //We can evict this right away because we know it won't fit.
       onEviction(key, bitmap);
       return null;
     }
 
     final Bitmap result = cache.put(key, bitmap);
+    ++currentPoolSize;
     if (bitmap != null) {
-      currentSize = currentSize + getSize(bitmap);
+      currentMemSize = currentMemSize + getSize(bitmap);
     }
     if (result != null) {
-      currentSize = currentSize - getSize(bitmap);
+      --currentPoolSize;
+      currentMemSize = currentMemSize - getSize(bitmap);
     }
     evict();
 
     return result;
   }
 
-  @Override public synchronized Bitmap get(UrlKeyCombo key) {
+  @Override public synchronized Bitmap get(String key) {
     return cache.get(key);
   }
 
-  @Override public synchronized void setMaxSize(int size) {
-    maxSize = Math.round(size * memoryMode);
-  }
-
-
-  private void trimToSize(int size) {
+  private void trimToSize(int memSize, int poolSize) {
     Map.Entry last;
-    Timber.d("current size is " + currentSize);
-    Timber.d("size is " + size);
-    while (currentSize > size) {
+    if (currentMemSize > memSize) {
+      Timber.d("Current memory size is larger than max size.");
+      Timber.d("Current mem: " + currentMemSize + " and max: " + memSize);
+    }
+    if (currentPoolSize > poolSize) {
+      Timber.d("Current pool size is greater than max pool size.");
+      Timber.d("Current pool: " + currentPoolSize + " and max: " + poolSize);
+    }
+    while (currentMemSize > memSize || currentPoolSize > poolSize) {
       last = cache.entrySet().iterator().next();
       final Bitmap evicted = (Bitmap) last.getValue();
 
-      currentSize = currentSize - getSize(evicted);
+      currentMemSize = currentMemSize - getSize(evicted);
+      --currentPoolSize;
 
-      final UrlKeyCombo key = (UrlKeyCombo) last.getKey();
+      final String key = (String) last.getKey();
       cache.remove(key);
       onEviction(key, evicted);
     }
+    Timber.d(
+        "Trim finished --> Current mem: " + currentMemSize + ", current pool: " + currentPoolSize);
   }
 
-  public void onEviction(UrlKeyCombo key, Bitmap bitmap) {
-    Timber.d("Evicting: " + key.getSafelyEncodedUrlString());
+  public void onEviction(String key, Bitmap bitmap) {
+    Timber.d("Evicting: " + key);
   }
 
-  public synchronized int getMaxSize() {
-    return maxSize;
+  public synchronized int getMaxMemSize() {
+    return maxMemSize;
   }
 
-  public synchronized int getCurrentSize() {
-    return currentSize;
+  @Override public synchronized void setMaxMemSize(int size) {
+    maxMemSize = Math.round(size * memoryMode);
+    evict();
+  }
+
+  @Override public void setMaxPoolSize(int size) {
+    this.maxPoolSize = size;
+    evict();
+  }
+
+  public synchronized int getCurrentMemSize() {
+    return currentMemSize;
   }
 
   public synchronized boolean contains(UrlKeyCombo key) {

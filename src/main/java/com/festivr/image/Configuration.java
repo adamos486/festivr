@@ -97,9 +97,28 @@ public class Configuration {
 
     public Builder setMemoryCacheSize(int size) {
       if (memoryCache == null) {
-        memoryCache = new LruCache(size);
+        memoryCache = new LruCache(size, false);
       } else {
-        memoryCache.setMaxSize(size);
+        memoryCache.setMaxMemSize(size);
+      }
+      return this;
+    }
+
+    public Builder setMemoryCachePool(int size) {
+      if (memoryCache == null) {
+        memoryCache = new LruCache(size, true);
+      } else {
+        memoryCache.setMaxPoolSize(size);
+      }
+      return this;
+    }
+
+    public Builder setMemoryCacheMode(Context context, float mode) {
+      if (memoryCache == null) {
+        memoryCache = ConfigFactory.initDefaultLruCache(context, -1);
+        memoryCache.setMemoryMode(mode);
+      } else {
+        memoryCache.setMemoryMode(mode);
       }
       return this;
     }

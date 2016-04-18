@@ -40,7 +40,7 @@ public class ConfigFactory {
       }
       maxSize = 1024 * 1024 * memoryClass / 8;
     }
-    return new LruCache(maxSize);
+    return new LruCache(maxSize, 25, LruCache.MEDIUM_MEMORY);
   }
 
   public static Executor initDefaultTaskDistributor() {
