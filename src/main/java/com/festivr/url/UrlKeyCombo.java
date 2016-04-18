@@ -3,9 +3,12 @@ package com.festivr.url;
 import android.net.Uri;
 import android.text.TextUtils;
 import com.festivr.utils.Constants;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import timber.log.Timber;
 
 public class UrlKeyCombo {
@@ -19,6 +22,7 @@ public class UrlKeyCombo {
   private URL safelyEncodedUrl;
   private String safelyEncodedString;
   private byte[] byteArrayKey;
+  private String md5Key;
 
   public UrlKeyCombo(URL url) {
     this.url = Constants.checkForNonNull(url,
@@ -34,10 +38,6 @@ public class UrlKeyCombo {
     }
     this.urlAsString = Constants.checkForNonEmptyText(url,
         "Url String should never be empty or null in UrlKeyCombo construction!");
-  }
-
-  public URL transformToURL() throws MalformedURLException {
-    return getSafelyEncodedUrl();
   }
 
   public URL getSafelyEncodedUrl() {
@@ -70,7 +70,7 @@ public class UrlKeyCombo {
     return getCacheKey();
   }
 
-  private byte[] getBytesOfCacheKey() {
+  public byte[] getBytesOfCacheKey() {
     if (byteArrayKey == null) {
       byteArrayKey = getCacheKey().getBytes(CHARSET);
     }
@@ -80,9 +80,22 @@ public class UrlKeyCombo {
   @Override public boolean equals(Object o) {
     if (o instanceof UrlKeyCombo) {
       UrlKeyCombo that = (UrlKeyCombo) o;
-      return this.getCacheKey().equals(that.getCacheKey());
+      return this.getMD5HashKey().equals(that.getMD5HashKey());
     }
     return false;
+  }
+
+  public String getMD5HashKey() {
+    if (md5Key == null) {
+      try {
+        MessageDigest m = MessageDigest.getInstance("MD5");
+        m.update(urlAsString.getBytes(), 0, urlAsString.length());
+        md5Key = new BigInteger(1, m.digest()).toString(16);
+      } catch (NoSuchAlgorithmException e) {
+        Timber.e("No Such Algorithm when trying to generate md5 key!!!");
+      }
+    }
+    return md5Key;
   }
 
   @Override public int hashCode() {
