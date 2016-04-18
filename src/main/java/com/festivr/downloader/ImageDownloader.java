@@ -40,8 +40,6 @@ public class ImageDownloader {
 
       @Override public void onResponse(Call call, Response response) throws IOException {
         if (response.isSuccessful()) {
-          Timber.d("YAY!");
-
           InputStream stream = response.body().byteStream();
           BitmapFactory.Options options = new BitmapFactory.Options();
           if (response.body().contentLength() >= 150000
@@ -57,7 +55,7 @@ public class ImageDownloader {
           if (bitmap != null) {
             Timber.d("Calling back with bitmap.");
             listener.loadingComplete(key, view, bitmap);
-            memoryCache.put(key, bitmap);
+            memoryCache.put(key.getMD5HashKey(), bitmap);
           } else {
             Timber.e("Uh oh! Couldn't load the bitmap.");
           }

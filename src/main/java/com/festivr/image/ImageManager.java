@@ -31,7 +31,7 @@ public class ImageManager {
 
     taskDistributor.execute(new Runnable() {
       @Override public void run() {
-        Bitmap bitmap = config.getMemoryCache().get(task.getKey());
+        Bitmap bitmap = config.getMemoryCache().get(task.getKey().getMD5HashKey());
         checkForExecutorShutdown();
         if (bitmap == null || bitmap.isRecycled()) {
           Timber.d("Adding a network Task!!!");

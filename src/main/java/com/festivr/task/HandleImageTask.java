@@ -30,7 +30,7 @@ public class HandleImageTask implements Runnable {
 
   @Override public void run() {
     Bitmap bitmap;
-    bitmap = config.getMemoryCache().get(key);
+    bitmap = config.getMemoryCache().get(key.getMD5HashKey());
     //Bitmap doesn't exist in cache, load from network.
     if (bitmap == null || bitmap.isRecycled()) {
       downloader.downloadImage(key, listener, view);
