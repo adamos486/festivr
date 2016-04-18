@@ -164,22 +164,19 @@ public class Constants {
     return hugeList;
   }
 
-  public static <T> T checkForNonNullArg(T generic) {
-    return checkForNonNull(generic, "Input argument cannot be null!");
-  }
-
+  /**
+   * Check if any object is null and throw a NPE if it is.
+   * If not null, return the same object.
+   * @param generic The object to be checked.
+   * @param exceptionMsg The message for the NPE.
+   * @param <T> The generic type.
+   * @return A generic type, which translates to whatever object is passed in as @param generic.
+   */
   public static <T> T checkForNonNull(T generic, String exceptionMsg) {
     if (generic == null) {
       throw new NullPointerException(exceptionMsg);
     }
     return generic;
-  }
-
-  public static String checkForNonEmptyText(String text) {
-    if (TextUtils.isEmpty(text)) {
-      throw new IllegalArgumentException("Text should not be empty or null.");
-    }
-    return text;
   }
 
   public static String checkForNonEmptyText(String text, String exceptionMsg) {

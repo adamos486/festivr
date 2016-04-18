@@ -25,18 +25,27 @@ public class MainActivity extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.deckard);
 
+    //Check if actionBar is defined.
     if (getActionBar() != null) {
+      //Set the title for this screen.
       getActionBar().setTitle(R.string.artists_title);
     }
 
     artistOptions = (ListView) findViewById(R.id.artist_options);
+    //Blocking descendant focusability to always allow clicks to get through
+    //to an OnItemClickListener.
     artistOptions.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+
+    //Define the String array which provides the options to choose.
     adapter = new ChooseExperienceAdapter(
         Arrays.asList(getResources().getStringArray(R.array.artist_names)));
+
     artistOptions.setAdapter(adapter);
     artistOptions.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        ArrayList<String> imageUrls = new ArrayList<String>();
+        //Since there are a finite number of controlled options on this screen,
+        //we can display and process them with Constants defined in the adapter.
+        ArrayList<String> imageUrls = new ArrayList<>();
         String title = "";
         switch (position) {
           case ChooseExperienceAdapter.PORTER_ROBINSON_INDEX:
@@ -65,6 +74,8 @@ public class MainActivity extends Activity {
             break;
         }
 
+        //ExperienceImagesActivity should be as generic as possible, therefore,
+        //passing the title and the url list as extras, allows less code in the onCreate.
         Intent experienceIntent = new Intent(MainActivity.this, ExperienceImagesActivity.class);
         experienceIntent.putExtra("title", title);
         experienceIntent.putStringArrayListExtra("imageUrls", imageUrls);

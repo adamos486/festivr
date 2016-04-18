@@ -14,6 +14,7 @@ public class FestivrApplication extends Application {
     super.onCreate();
     instance = this;
 
+    //Plant timber so that it can be used throughout the application.
     Timber.plant(new Timber.DebugTree());
   }
 }
