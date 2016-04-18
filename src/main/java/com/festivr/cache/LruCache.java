@@ -1,6 +1,7 @@
 package com.festivr.cache;
 
 import android.graphics.Bitmap;
+import android.support.annotation.VisibleForTesting;
 import com.festivr.url.UrlKeyCombo;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -10,7 +11,7 @@ public class LruCache implements BaseCache {
   public static final float LOW_MEMORY = 0.5f;
   public static final float MEDIUM_MEMORY = 1f;
   public static final float HIGH_MEMORY = 1.5f;
-  private final LinkedHashMap<String, Bitmap> cache = new LinkedHashMap<>(0, 0.75f, true);
+  private final LinkedHashMap<String, Bitmap> cache = new LinkedHashMap<>(25, 0.75f, true);
   private int initialMemMaxSize;
   private float memoryMode = MEDIUM_MEMORY;
   private int maxMemSize;
@@ -214,15 +215,27 @@ public class LruCache implements BaseCache {
     evict();
   }
 
-  public synchronized int getCurrentMemSize() {
+  protected int getMaxPoolSize() {
+    return this.maxPoolSize;
+  }
+
+  protected synchronized int getCurrentMemSize() {
     return currentMemSize;
   }
 
-  public synchronized boolean contains(UrlKeyCombo key) {
+  public synchronized boolean contains(String key) {
     return cache.containsKey(key);
   }
 
   private int getSize(Bitmap bitmap) {
     return bitmap.getRowBytes() * bitmap.getHeight();
+  }
+
+  @VisibleForTesting protected int getCurrentPoolSize() {
+    return this.currentPoolSize;
+  }
+
+  @VisibleForTesting protected int getCacheSize() {
+    return cache.size();
   }
 }

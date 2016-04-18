@@ -8,6 +8,7 @@ public interface BaseCache {
   Bitmap get(String key);
   Bitmap remove(String key);
   void clearCache();
+  void evict();
   void setMaxMemSize(int size);
   void setMaxPoolSize(int size);
   void setMemoryMode(float mode);
