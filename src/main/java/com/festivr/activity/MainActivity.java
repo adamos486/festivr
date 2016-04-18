@@ -89,12 +89,12 @@ public class MainActivity extends Activity {
     //ALTERNATIVE
     //Images.getSingleton()
     //    .setup(new Configuration.Builder(this).setMemoryCacheSize(52428800)
-    //        .setMemoryCachePool(25)
+    //        .setMemoryCachePool(13)
     //        .setMemoryCacheMode(this, LruCache.MEDIUM_MEMORY)
     //        .build());
 
     //ANOTHER ALTERNATIVE
     //Images.getSingleton()
-    //    .setup(new Configuration.Builder(this).setMemoryCache(new LruCache(52428800, 25)).build());
+    //    .setup(new Configuration.Builder(this).setMemoryCache(new LruCache(52428800, 13)).build());
   }
 }
