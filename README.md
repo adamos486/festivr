@@ -9,11 +9,15 @@ You'll find the following paradigms in this sample project as well:
 - Behavioral testing practices
 
 Download this project, import it into Android studio, compile it, and run the tests in LruCacheTest.java
+
 Run it on an Android device to profile memory usage, and view image cache handling while scrolling.
 
-# NOTE:
+### NOTE:
 - You'll probably need to modify the local.properties file.
 
-## Running the Robolectric Test
+### Running the Robolectric Test
 
 To run Robolectric tests open Studio's "Build Variants" pane and change the "Test Artifact" to "Unit Tests". You can then run Robolectric tests using the JUnit test runner.
+
+### Notes Regarding Image Rights:
+All images were found on Google and uploaded to imgur.com. If you'd like any of these images removed, please contact the owner of this repository.
