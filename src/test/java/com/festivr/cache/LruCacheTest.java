@@ -91,7 +91,7 @@ public class LruCacheTest {
     assertTrue(subject.getCurrentPoolSize() == 9);
   }
 
-  @Test public void whenChangingMemoryMode_shouldEvict() throws Exception {
+  @Test public void whenChangingToLowMemoryMode_shouldEvict() throws Exception {
     populateCache();
     //verify controls
     assertTrue(subject.contains("mock_url_1"));
@@ -110,7 +110,7 @@ public class LruCacheTest {
     assertTrue(subject.contains("mock_url_6"));
   }
 
-  @Test public void whenChangingMemoryMode_shouldEvict_thenShouldRespectNewMax() throws Exception {
+  @Test public void whenChangingToLowMemoryMode_shouldEvict_thenShouldRespectNewMax() throws Exception {
     populateCache();
     //Control verification.
     assertTrue(subject.contains("mock_url_1"));
